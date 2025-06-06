@@ -14,7 +14,7 @@ export class Art {
   @Prop()
   artwork_type_title?: string;
   @Prop()
-  image_id?: number;
+  image_id?: string;
   @Prop()
   artist_display?: string;
   @Prop()

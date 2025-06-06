@@ -11,31 +11,6 @@ export class ArtworksController {
     private bulkImportService: BulkJsonImportService,
   ) {}
 
-  @Post('file')
-  async importFromFile() {
-    this.logger.debug('importFromFile method invoked');
-    const filePath = 'src/data/allArtworks.jsonl';
-    this.logger.debug(`File path: ${filePath}`);
-
-    try {
-      const result = await this.artworkService.importFromFile(filePath);
-      this.logger.debug('Service call completed successfully');
-      return {
-        message: 'Import completed',
-        ...result,
-      };
-    } catch (error) {
-      this.logger.error('Error occurred during import', error);
-      throw error; // Re-throw the error to ensure proper error handling
-    }
-  }
-
-  @Get('hello')
-  hello() {
-    this.logger.debug('hello method invoked');
-    return 'Hello, World!';
-  }
-
   @Post('folder')
   async importFolder(
     @Body()
@@ -54,5 +29,14 @@ export class ArtworksController {
   @Get('preview')
   async previewImport(@Query('folderPath') folderPath: string) {
     return await this.bulkImportService.previewImport(folderPath);
+  }
+
+  // TODO: Tiff: Add Pagination
+  @Get('all')
+  async getAllArtworks(
+    @Query('page') page: number = 1, // Default to page 1
+    @Query('limit') limit: number = 20, // Default to 10 items per page
+  ) {
+    return await this.artworkService.getAllArtworks(page, limit);
   }
 }

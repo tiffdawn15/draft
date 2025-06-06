@@ -9,7 +9,7 @@ interface Artworks {
   id?: number;
   artwork_type_title?: string;
   artist_id?: number;
-  image_id?: number;
+  image_id?: string;
   title?: string;
   api_link?: string;
   artist_display?: string;
@@ -115,13 +115,13 @@ export class BulkJsonImportService {
       for (const filePath of batch) {
         try {
           const content = await fs.readFile(filePath, 'utf8');
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const jsonData: Record<string, unknown> = JSON.parse(content);
+          //   const jsonData: Record<string, unknown> = JSON.parse(content);
+          const jsonData: Artworks = JSON.parse(content) as Artworks;
           // Add filename and import timestamp if needed
           documents.push({
             ...jsonData, // Copies all properties from jsonData
             _sourceFile: path.basename(filePath), // Adds a new property '_sourceFile'
-            _importedAt: new Date(),
+            _importedAt: new Date(), // Adds a new property '_importedAt'
           });
         } catch (error) {
           console.log(error);
