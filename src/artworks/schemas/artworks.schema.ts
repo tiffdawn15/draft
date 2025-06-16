@@ -27,6 +27,16 @@ export class Art {
   provenance_text?: string;
   @Prop()
   updated_at?: Date;
+  @Prop()
+  description?: string;
+  @Prop()
+  medium_display?: string;
+  @Prop()
+  placeOfOrigin?: string;
+  @Prop()
+  date_end?: Date;
+  @Prop()
+  category_titles?: string;
 }
 
 export const ArtSchema = SchemaFactory.createForClass(Art);

@@ -4,10 +4,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Art } from '../artworks/schemas/artworks.schema'; // Ensure the correct path to the Art schema
 
-const mockArtModel = {
-  name: 'Art',
-};
-
 const mockArtModelImplementation = {
   find: jest.fn(), // Mock any methods you use in your service
   create: jest.fn(),
