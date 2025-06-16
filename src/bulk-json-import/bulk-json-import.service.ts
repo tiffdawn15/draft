@@ -5,7 +5,8 @@ import { Model } from 'mongoose';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Art } from 'src/artworks/schemas/artworks.schema';
-interface Artworks {
+
+export interface Artworks {
   id?: number;
   artwork_type_title?: string;
   artist_id?: number;
