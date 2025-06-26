@@ -7,7 +7,8 @@ import * as path from 'path';
 import { Art } from 'src/artworks/schemas/artworks.schema';
 
 export interface Artworks {
-  id?: number;
+  _id: string; // MongoDB ObjectId
+  original_idid?: number;
   artwork_type_title?: string;
   artist_id?: number;
   image_id?: string;
@@ -21,6 +22,7 @@ export interface Artworks {
   _sourceFile?: string;
   _importedAt: Date;
 }
+
 @Injectable()
 export class BulkJsonImportService {
   private readonly logger = new Logger(BulkJsonImportService.name);
@@ -32,7 +34,7 @@ export class BulkJsonImportService {
   /**
    * Process all JSON files in a directory and import each as a separate document
    */
-  async importJsonFolder(
+  async functionimportJsonFolder(
     folderPath: string,
     options?: {
       batchSize?: number;

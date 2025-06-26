@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   InternalServerErrorException,
   Logger,
   Param,
@@ -11,6 +12,7 @@ import {
 import { ArtworksService } from './artworks.service';
 import { BulkJsonImportService } from 'src/bulk-json-import/bulk-json-import.service';
 import { ArtworksDto } from '../schemas/artworks.dto';
+import { ResponseObject } from '../schemas/response.schema';
 
 @Controller('artworks')
 export class ArtworksController {
@@ -33,37 +35,67 @@ export class ArtworksController {
     },
   ) {
     const { folderPath, ...options } = body;
-    return await this.bulkImportService.importJsonFolder(folderPath, options);
+    return await this.bulkImportService.functionimportJsonFolder(
+      folderPath,
+      options,
+    );
   }
 
-  @Get('preview')
-  async previewImport(@Query('folderPath') folderPath: string) {
-    return await this.bulkImportService.previewImport(folderPath);
-  }
+  // @Get('all')
+  // async getAllArtworks(
+  //   @Query('page') page: number = 1, // Default to page 1
+  //   @Query('limit') limit: number = 20, // Default to 10 items per page
+  // ) {
+  //   return await this.artworkService.getAllArtworks(page, limit);
+  // }
 
   @Get('all')
   async getAllArtworks(
-    @Query('page') page: number = 1, // Default to page 1
-    @Query('limit') limit: number = 20, // Default to 10 items per page
-  ) {
-    return await this.artworkService.getAllArtworks(page, limit);
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 20,
+  ): Promise<ResponseObject<ArtworksDto[]>> {
+    try {
+      const result = await this.artworkService.getAllArtworks(page, limit);
+  
+      return {
+        status: HttpStatus.OK,
+        message: 'Artworks retrieved successfully',
+        data: result.data, // Extract the array of artworks
+      };
+    } catch (error) {
+      this.logger.error('Error fetching all artworks:', error);
+      throw new InternalServerErrorException({
+        status: 'error',
+        message: 'Internal server error',
+        error: error.message,
+      });
+    }
   }
 
   @Get(':id')
   async getArtworkById(
     @Param('id') id: string,
-  ): Promise<ArtworksDto | { message: string }> {
+  ): Promise<ResponseObject<ArtworksDto> | { message: string }> {
     try {
       const artwork = await this.artworkService.getArtworkById(id);
 
       if (!artwork) {
-        return { message: `Artwork with ID ${id} not found` }; // NestJS will handle the response
+        return { message: `Artwork with id ${id} not found` };
       }
 
-      return artwork;
+      return {
+        status: HttpStatus.ACCEPTED,
+        data: artwork,
+        message: 'Greate success!',
+        error: null,
+      };
     } catch (error) {
-      this.logger.error(`Error fetching artwork by ID ${id}:`, error);
-      throw new InternalServerErrorException('Internal server error');
+      this.logger.error(`Error fetching artwork by id ${id}:`, error);
+      throw new InternalServerErrorException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        error: error.message,
+      });
     }
   }
 }

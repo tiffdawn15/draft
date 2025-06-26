@@ -2,6 +2,7 @@ export class ArtworksDto {
   id: string;
   title: string;
   description?: string;
+  api_link?: string; 
   image_id?: string;
   artist?: string;
   artist_display?: string;
@@ -12,4 +13,5 @@ export class ArtworksDto {
   medium_display?: string;
   placeOfOrigin?: string;
   provenance_text?: string;
+  artist_id?: number;
 }

@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Art } from '../schemas/artworks.schema'; // Ensure the correct path to the Art schema
 
 const mockArtModel = {
-  find: jest.fn(), // Mock any methods used in ArtworksService
+  find: jest.fn(), 
   create: jest.fn(),
   findById: jest.fn(),
 };
@@ -19,8 +19,8 @@ describe('ArtworksService', () => {
       providers: [
         ArtworksService,
         {
-          provide: getModelToken(Art.name), // Ensure this matches the schema name
-          useValue: mockArtModel, // Provide the mocked model
+          provide: getModelToken(Art.name),
+          useValue: mockArtModel, 
         },
       ],
     }).compile();

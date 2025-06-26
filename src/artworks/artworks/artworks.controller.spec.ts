@@ -16,7 +16,6 @@ const mockBulkJsonImportService = {
 describe('ArtworksController', () => {
   let controller: ArtworksController;
   let artworksService: ArtworksService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let bulkJsonImportService: BulkJsonImportService;
 
   beforeEach(async () => {
@@ -25,28 +24,23 @@ describe('ArtworksController', () => {
       providers: [
         {
           provide: ArtworksService,
-          useValue: mockArtworksService, // Mock ArtworksService
+          useValue: mockArtworksService,
         },
         {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           provide: BulkJsonImportService,
-          useValue: mockBulkJsonImportService, // Mock BulkJsonImportService
+          useValue: mockBulkJsonImportService,
         },
       ],
     }).compile();
 
     controller = module.get<ArtworksController>(ArtworksController);
     artworksService = module.get<ArtworksService>(ArtworksService);
-    bulkJsonImportService = module.get<BulkJsonImportService>(BulkJsonImportService);
+    bulkJsonImportService = module.get<BulkJsonImportService>(
+      BulkJsonImportService,
+    );
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  // it('should call delete method from the service', async () => {
-  //   const id = '123';
-  //   await controller.delete(id);
-  //   expect(mockArtworksService.delete).toHaveBeenCalledWith(id);
-  // });
 });
