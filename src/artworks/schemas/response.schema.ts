@@ -1,8 +1,8 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
 export interface ResponseObject<T> {
-    status: HttpStatus;
-    message: string;
-    data?: T; 
-    error?: any; 
-  }
+  status: HttpStatus;
+  message: string;
+  data?: T;
+  error?: string;
+}
