@@ -1,5 +1,8 @@
-export class ArtDto {
-  id: string;
+import mongoose from 'mongoose';
+
+export class ArtDTO {
+  _id: mongoose.Schema.Types.ObjectId;
+  id: number;
   title: string;
   description?: string;
   image_id?: string;
@@ -10,8 +13,3 @@ export class ArtDto {
   publication_history?: string;
   provenance_text?: string;
 }
-//   const photo: Photo = {
-//     id: id,
-//     imageId: data.image_id,
-//     url: url,
-//     title: data.title,

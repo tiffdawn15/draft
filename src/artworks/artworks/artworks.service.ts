@@ -2,8 +2,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Art } from '../schemas/artworks.schema';
-import { ArtDto } from '../schemas/arts.dto';
+import { ArtDocument } from '../schemas/artworks.schema';
+import { ArtDTO } from '../schemas/arts.dto';
 import { ArtworksDto } from '../schemas/artworks.dto';
 
 @Injectable()
@@ -11,8 +11,8 @@ export class ArtworksService {
   private readonly logger = new Logger(ArtworksService.name);
 
   constructor(
-    @InjectModel(Art.name)
-    private readonly dataModel: Model<Art>,
+    @InjectModel('Art')
+    private readonly dataModel: Model<ArtDocument>,
   ) {}
 
   async getAllArtworks(
@@ -25,13 +25,15 @@ export class ArtworksService {
   }> {
     try {
       const skip = (page - 1) * limit;
-      const data = await this.dataModel.find({}).skip(skip).limit(limit);
+      const data: ArtDocument[] = await this.dataModel
+        .find({})
+        .skip(skip)
+        .limit(limit);
       const mappedData = data
-        .filter((item) => item.image_id) // Filter out items without image_id
+        .filter((item) => item.image_id)
         .map((item) => {
-          // Use the syntax to unpack the object
-          console.log(item);
-          const artDto = new ArtDto();
+          const artDto = new ArtDTO();
+          artDto._id = item._id;
           artDto.id = item.id;
           artDto.title = item.title;
           artDto.image_id = item.image_id;
@@ -44,7 +46,6 @@ export class ArtworksService {
           return artDto;
         });
 
-      // Return success response with data and count
       return {
         success: true,
         count: mappedData.length,
@@ -69,7 +70,7 @@ export class ArtworksService {
       }
 
       // Fetch the artwork by ID from the data source
-      const artwork = await this.dataModel.findOne({id: id});
+      const artwork = await this.dataModel.findOne({ id: id });
       this.logger.debug('artwork', artwork);
       if (!artwork) {
         this.logger.error(`Artworks Service: Artwork with id ${id} not found`);
@@ -78,7 +79,8 @@ export class ArtworksService {
 
       // Map the artwork entity to the ArtDto (if necessary)
       const artDto: ArtworksDto = {
-        id: artwork.id,
+        _id: artwork._id,
+        id: artwork.id || 0,
         title: artwork.title,
         description: artwork.description,
         api_link: artwork.api_link,
@@ -86,10 +88,9 @@ export class ArtworksService {
         artist_display: artwork.artist_display || '',
         artwork_type_title: artwork.artwork_type_title || '',
         artist_id: artwork.artist_id || 0,
-        
+
         // Add other fields as needed
       };
-      
 
       return artDto;
     } catch (error) {

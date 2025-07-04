@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Art } from 'src/artworks/schemas/artworks.schema';
 
 export interface Artworks {
-  _id: string; // MongoDB ObjectId
-  original_idid?: number;
+  _id: mongoose.Schema.Types.ObjectId;
+  id?: number;
   artwork_type_title?: string;
   artist_id?: number;
   image_id?: string;
@@ -114,11 +114,9 @@ export class BulkJsonImportService {
 
       const documents: Artworks[] = [];
 
-      // Read all files in the batch
       for (const filePath of batch) {
         try {
           const content = await fs.readFile(filePath, 'utf8');
-          //   const jsonData: Record<string, unknown> = JSON.parse(content);
           const jsonData: Artworks = JSON.parse(content) as Artworks;
           // Add filename and import timestamp if needed
           documents.push({
@@ -131,7 +129,6 @@ export class BulkJsonImportService {
         }
       }
 
-      // Insert valid documents
       if (documents.length > 0) {
         try {
           await this.dataModel.insertMany(documents, { ordered: false });
@@ -142,9 +139,9 @@ export class BulkJsonImportService {
         } catch (error) {
           if (skipErrors) {
             // Handle partial success in bulk operations
-            // const insertedCount = error.result?.insertedCount || 0;
-            // result.successful += insertedCount;
-            // result.failed += documents.length - insertedCount;
+            const insertedCount = error.result?.insertedCount || 0;
+            result.successful += insertedCount;
+            result.failed += documents.length - insertedCount;
             this.logger.warn(
               `Batch insert partially failed: /${documents.length} succeeded`,
             );
