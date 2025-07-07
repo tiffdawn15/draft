@@ -8,7 +8,9 @@ import { Art, ArtSchema } from './artworks/schemas/artworks.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/nest'),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/artworks',
+    ),
     MongooseModule.forFeature([
       { name: Art.name, schema: ArtSchema, collection: 'artworks' },
     ]),
