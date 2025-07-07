@@ -7,7 +7,9 @@ import { BulkJsonImportService } from 'src/bulk-json-import/bulk-json-import.ser
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/artworks'),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/artworks',
+    ),
     MongooseModule.forFeature([{ name: 'Art', schema: ArtSchema }]),
   ],
   controllers: [ArtworksController],
