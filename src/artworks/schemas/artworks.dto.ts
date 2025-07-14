@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export class ArtworksDto {
-  _id: mongoose.Schema.Types.ObjectId;
+  // _id: mongoose.Schema.Types.ObjectId;
   id?: number;
   title: string;
   description?: string;
