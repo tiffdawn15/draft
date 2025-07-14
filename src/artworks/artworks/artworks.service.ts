@@ -33,7 +33,7 @@ export class ArtworksService {
         .filter((item) => item.image_id)
         .map((item) => {
           const artDto = new ArtDTO();
-          artDto._id = item._id;
+          // artDto._id = item._id;
           artDto.id = item.id;
           artDto.title = item.title;
           artDto.image_id = item.image_id;
@@ -79,7 +79,7 @@ export class ArtworksService {
 
       // Map the artwork entity to the ArtDto (if necessary)
       const artDto: ArtworksDto = {
-        _id: artwork._id,
+        // _id: artwork._id,
         id: artwork.id || 0,
         title: artwork.title,
         description: artwork.description,

@@ -6,8 +6,6 @@ export type ArtDocument = HydratedDocument<Art>;
 @Schema()
 export class Art {
   @Prop()
-  _id: mongoose.Schema.Types.ObjectId;
-  @Prop()
   id: number;
   @Prop({ required: true })
   title: string;
@@ -37,8 +35,9 @@ export class Art {
   placeOfOrigin?: string;
   @Prop()
   date_end?: Date;
-  @Prop()
-  category_titles?: string;
+  // TODO: this is an array 
+  // @Prop()
+  // category_titles?: string;
 }
 
 export const ArtSchema = SchemaFactory.createForClass(Art);

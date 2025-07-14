@@ -6,8 +6,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Art } from 'src/artworks/schemas/artworks.schema';
 
-export interface Artworks {
-  _id: mongoose.Schema.Types.ObjectId;
+export class CreateArtworkDto {
   id?: number;
   artwork_type_title?: string;
   artist_id?: number;
@@ -20,7 +19,23 @@ export interface Artworks {
   provenance_text?: string;
   updated_at?: string;
   _sourceFile?: string;
-  _importedAt: Date;
+  _importedAt?: Date;
+}
+export interface Artworks {
+  _id?: mongoose.Schema.Types.ObjectId;
+  id?: number;
+  artwork_type_title?: string;
+  artist_id?: number;
+  image_id?: string;
+  title?: string;
+  api_link?: string;
+  artist_display?: string;
+  department_title?: string;
+  publication_history?: string;
+  provenance_text?: string;
+  updated_at?: string;
+  _sourceFile?: string;
+  _importedAt?: Date;
 }
 
 @Injectable()
@@ -112,17 +127,18 @@ export class BulkJsonImportService {
         `Processing batch ${i + 1}/${batches.length} (${batch.length} files)`,
       );
 
-      const documents: Artworks[] = [];
+      const documents: CreateArtworkDto[] = [];
 
       for (const filePath of batch) {
         try {
           const content = await fs.readFile(filePath, 'utf8');
-          const jsonData: Artworks = JSON.parse(content) as Artworks;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const jsonData: Record<string, unknown> = JSON.parse(content);
           // Add filename and import timestamp if needed
           documents.push({
-            ...jsonData, // Copies all properties from jsonData
-            _sourceFile: path.basename(filePath), // Adds a new property '_sourceFile'
-            _importedAt: new Date(), // Adds a new property '_importedAt'
+            ...jsonData,
+            _sourceFile: path.basename(filePath),
+            _importedAt: new Date(),
           });
         } catch (error) {
           console.log(error);
@@ -131,12 +147,15 @@ export class BulkJsonImportService {
 
       if (documents.length > 0) {
         try {
-          await this.dataModel.insertMany(documents, { ordered: false });
-          //  result.successful += documents.length;
+          const insertResult = await this.dataModel.insertMany(documents);
+          console.log('Bulk insert result:', insertResult);
+
+          // result.successful += documents.length;
           this.logger.log(
             `Successfully inserted ${documents.length} documents`,
           );
         } catch (error) {
+          this.logger.error(error);
           if (skipErrors) {
             // Handle partial success in bulk operations
             const insertedCount = error.result?.insertedCount || 0;
@@ -163,6 +182,29 @@ export class BulkJsonImportService {
       batches.push(batch);
     }
     return batches;
+  }
+
+  /**
+   * Insert a single document (not used in bulk import)
+   */
+  async insertOne(): Promise<boolean> {
+    this.logger.log('Inserting a single document for testing');
+    const document: CreateArtworkDto = {
+      title: 'Sample Artwork',
+      artist_display: 'John Doe',
+      artwork_type_title: 'Painting',
+      artist_id: 123,
+      image_id: 'image123',
+      api_link: 'http://example.com/artwork/123',
+      department_title: 'Modern Art',
+      publication_history: 'Published in 2020',
+      provenance_text: 'Acquired in 2021',
+      updated_at: new Date().toISOString(),
+      _importedAt: new Date(),
+    };
+    const result = await this.dataModel.create(document);
+    console.log(result);
+    return true;
   }
 
   /**
