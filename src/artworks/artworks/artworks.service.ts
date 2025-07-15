@@ -6,6 +6,12 @@ import { ArtDocument } from '../schemas/artworks.schema';
 import { ArtDTO } from '../schemas/arts.dto';
 import { ArtworksDto } from '../schemas/artworks.dto';
 
+export interface Pagination {
+  page?: number;
+  limit?: number;
+  total?: number;
+}
+
 @Injectable()
 export class ArtworksService {
   private readonly logger = new Logger(ArtworksService.name);
@@ -19,16 +25,20 @@ export class ArtworksService {
     page: number,
     limit: number,
   ): Promise<{
+    pagination: Pagination;
     success: boolean;
-    count: number;
-    data: any[];
+    total: number;
+    data: ArtDTO[];
   }> {
     try {
       const skip = (page - 1) * limit;
+      const total = await this.dataModel.countDocuments({});
+
       const data: ArtDocument[] = await this.dataModel
         .find({})
         .skip(skip)
         .limit(limit);
+
       const mappedData = data
         .filter((item) => item.image_id)
         .map((item) => {
@@ -47,16 +57,23 @@ export class ArtworksService {
         });
 
       return {
+        pagination: {
+          total: total,
+          page: page,
+          limit: limit,
+        },
         success: true,
-        count: mappedData.length,
+        total: mappedData.length,
         data: mappedData,
       };
     } catch (error) {
-      // Handle errors and return failure response
       this.logger.error('Artworks Service: Error fetching artworks:', error);
       return {
+        pagination: {
+          total: 0,
+        },
         success: false,
-        count: 0,
+        total: 0,
         data: [],
       };
     }

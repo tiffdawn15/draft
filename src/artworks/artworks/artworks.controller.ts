@@ -40,6 +40,7 @@ export class ArtworksController {
       options,
     );
   }
+
   @Get('all')
   async getAllArtworks(
     @Query('page') page: number = 1,
@@ -49,9 +50,10 @@ export class ArtworksController {
       const result = await this.artworkService.getAllArtworks(page, limit);
 
       return {
+        pagination: result.pagination,
         status: HttpStatus.OK,
         message: 'Artworks retrieved successfully',
-        data: result.data, // Extract the array of artworks
+        data: result.data,
       };
     } catch (error) {
       this.logger.error('Error fetching all artworks:', error);
