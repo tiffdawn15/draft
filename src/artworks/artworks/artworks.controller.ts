@@ -13,7 +13,9 @@ import { ArtworksService } from './artworks.service';
 import { BulkJsonImportService } from 'src/bulk-json-import/bulk-json-import.service';
 import { ArtworksDto } from '../schemas/artworks.dto';
 import { ResponseObject } from '../schemas/response.schema';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('artworks')
 @Controller('artworks')
 export class ArtworksController {
   private readonly logger = new Logger(ArtworksController.name);
@@ -42,6 +44,12 @@ export class ArtworksController {
   }
 
   @Get('all')
+  @ApiQuery({ name: 'page', required: false, description: 'Page number' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page',
+  })
   async getAllArtworks(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
@@ -65,6 +73,7 @@ export class ArtworksController {
   }
 
   @Get(':id')
+  @ApiQuery({ name: 'id', required: false, description: 'Artwork id' })
   async getArtworkById(
     @Param('id') id: string,
   ): Promise<ResponseObject<ArtworksDto> | { message: string }> {
