@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Body,
   Controller,
@@ -75,7 +76,45 @@ export class ArtworksController {
       this.logger.error('Error fetching all artworks:', error);
       throw new InternalServerErrorException({
         status: 'error',
-        message: error.toString() || 'Internal server error',
+        message: error.toString() || 'Internal Server Error',
+      });
+    }
+  }
+
+  @Get('search')
+  @ApiQuery({
+    name: 'term',
+    required: true,
+    description: 'String term for artworks',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The artworks have been delivered. :)',
+    type: [ArtworksDto],
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server Error',
+  })
+  async getArtworkBySearch(
+    @Query('search') search: string,
+  ): Promise<ResponseObject<ArtworksDto[]> | { message: string }> {
+    try {
+      const artwork = await this.artworkService.getArtworksBySearch(search);
+      if (!artwork) {
+        return { message: `Artwork with search query ${search} not found` };
+      }
+
+      return {
+        status: HttpStatus.ACCEPTED,
+        data: artwork,
+        message: 'Greate success!',
+      };
+    } catch (error) {
+      this.logger.error(`Error fetching artwork by id ${search}:`, error);
+      throw new InternalServerErrorException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal Server Error',
       });
     }
   }
