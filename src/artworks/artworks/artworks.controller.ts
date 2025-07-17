@@ -13,7 +13,7 @@ import { ArtworksService } from './artworks.service';
 import { BulkJsonImportService } from 'src/bulk-json-import/bulk-json-import.service';
 import { ArtworksDto } from '../schemas/artworks.dto';
 import { ResponseObject } from '../schemas/response.schema';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('artworks')
 @Controller('artworks')
@@ -50,6 +50,14 @@ export class ArtworksController {
     required: false,
     description: 'Number of items per page',
   })
+  @ApiResponse({
+    status: 200,
+    description: 'The artworks have been delivered. :)',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server Error',
+  })
   async getAllArtworks(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
@@ -67,7 +75,7 @@ export class ArtworksController {
       this.logger.error('Error fetching all artworks:', error);
       throw new InternalServerErrorException({
         status: 'error',
-        message: 'Internal server error',
+        message: error.toString() || 'Internal server error',
       });
     }
   }
