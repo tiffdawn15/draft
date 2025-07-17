@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export class ArtworksDto {
   // _id: mongoose.Schema.Types.ObjectId;
   id?: number;
-  title: string;
+  title?: string;
   description?: string;
   api_link?: string;
   image_id?: string;

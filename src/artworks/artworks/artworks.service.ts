@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -113,6 +114,48 @@ export class ArtworksService {
     } catch (error) {
       this.logger.error(
         `Artworks Service: Error fetching artwork by ID ${id}:`,
+        error,
+      );
+      return null;
+    }
+  }
+
+  async getArtworksBySearch(search: string): Promise<ArtworksDto[] | null> {
+    try {
+      if (!search) {
+        this.logger.warn('No query for search');
+        return null;
+      }
+
+      const query = {
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { artist_display: { $regex: search, $options: 'i' } },
+          { artwork_type_title: { $regex: search, $options: 'i' } },
+        ],
+      };
+
+      // Fetch the artwork by ID from the data source
+      const results = await this.dataModel.find(query).exec();
+      this.logger.debug('artwork', results);
+      if (!results) {
+        this.logger.error(
+          `Artworks Service: Artworks for this ${search} not found`,
+        );
+        return null;
+      }
+
+      return results.map((artwork) => ({
+        id: artwork.id,
+        title: artwork.title,
+        image_id: artwork.image_id,
+        artist_display: artwork.artist_display,
+        artwork_type_title: artwork.artwork_type_title,
+        artist_id: artwork.artist_id,
+      }));
+    } catch (error) {
+      this.logger.error(
+        `Artworks Service: Error fetching artwork by term: ${search}:`,
         error,
       );
       return null;
